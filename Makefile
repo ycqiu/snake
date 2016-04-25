@@ -7,7 +7,7 @@ OBJ_FILE = $(patsubst %.cpp, %.o, $(SRC_FILE))
 
 all: hello
 
-snake: $(OBJ_FILE) 
+hello: $(OBJ_FILE) 
 	$(LD) $(LDFLAGS) $^ -o $@
 
 
