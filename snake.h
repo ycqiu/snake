@@ -37,6 +37,7 @@ public:
 
 	void resetPlat();
 	int kbhit();
+	int getkb();
 	
 	int draw();
 	int gameOver(int, int);

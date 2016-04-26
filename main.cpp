@@ -18,10 +18,15 @@ int kbhit()
 	struct timeval tv;
 	fd_set fds;
 	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	tv.tv_usec = 500 * 1000;
 	FD_ZERO(&fds);
 	FD_SET(STDIN_FILENO, &fds);
-	select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+	int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+	if(res > 0)
+	{
+		//select(0, NULL, NULL, NULL, &tv);	
+	}
+
 	return FD_ISSET(STDIN_FILENO, &fds);
 }
 
@@ -47,33 +52,19 @@ int main()
 	CSnake game;
 	while(ret == 0)
 	{
+		game.draw();
 		if(kbhit())
 		{
-			char key = getchar();
-			switch(key)
+			int key = game.getkb();
+			if(key == -1)
 			{
-				case 'w':
-					key = CSnake::UP;
-					break;
-			
-				case 's':
-					key = CSnake::DOWN;
-					break;
-
-				case 'a':
-					key = CSnake::LEFT;
-					break;
-
-				case 'd':
-					key = CSnake::RIGHT;
-				   	break;
+				return 0;
 			}
 			game.changeDirection(key);	
 		}
 
 		ret = game.go();
-		game.draw();
-		Sleep(300);
+		//Sleep(300);
 	}
 	return 0;
 }

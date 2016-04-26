@@ -2,6 +2,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include <iostream>
 
@@ -194,4 +195,34 @@ int CSnake::putApple()
 	int index = rand() % nullPos.size();
 	appleLoc_ = nullPos[index];
 	return 0;
+}
+
+
+int CSnake::getkb()
+{
+	char key = getchar();
+	switch(key)
+	{
+		case 'w':
+			key = CSnake::UP;
+			break;
+
+		case 's':
+			key = CSnake::DOWN;
+			break;
+
+		case 'a':
+			key = CSnake::LEFT;
+			break;
+
+		case 'd':
+			key = CSnake::RIGHT;
+			break;
+
+		case 'q':
+			key = -1;
+			break;
+	}
+
+	return key;
 }
