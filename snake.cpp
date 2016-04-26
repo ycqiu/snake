@@ -20,12 +20,7 @@ CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 { 
 	snake_ += char(H / 2 + 1);
 	snake_ += char(W / 2 + 1);
-/*	snake_ += char(H / 2 + 1);
-	snake_ += char(W / 2);
-	snake_ += char(H / 2) ;
-	snake_ += char(W / 2);
-*/
-	appleLoc_ = make_pair(3, 3);
+	putApple();
 	resetPlat();
 }
 
@@ -152,7 +147,7 @@ int CSnake::changeDirection(int d)
 	}
 	
 	//上下不能转换  左右不能转换		
-	const int v[] = {DOWN, UP, RIGHT, LEFT};	
+	static const int v[] = {DOWN, UP, RIGHT, LEFT};	
 	if(v[d] == dir_)
 	{
 		return ret;
@@ -196,7 +191,6 @@ int CSnake::putApple()
 	appleLoc_ = nullPos[index];
 	return 0;
 }
-
 
 int CSnake::getkb()
 {
