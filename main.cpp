@@ -1,10 +1,10 @@
-#include "snake.h"
 #include <iostream>
 #include <string>
 #include <stdio.h>
 #include <sys/select.h>
 #include <unistd.h>
 #include <termios.h>
+#include "snake.h"
 
 using namespace std;
 

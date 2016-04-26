@@ -1,10 +1,10 @@
-#include "snake.h"
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <iostream>
+#include "snake.h"
 
 using namespace std;
 
