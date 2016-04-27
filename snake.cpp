@@ -20,7 +20,9 @@ CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 { 
 	snake_ += char(H / 2 + 1);
 	snake_ += char(W / 2 + 1);
-	putApple();
+	dir_ = DOWN;
+//	putApple();
+	appleLoc_ = make_pair(1, 2);
 	resetPlat();
 }
 
@@ -82,7 +84,7 @@ int CSnake::draw()
 	return ret;
 }
 
-int CSnake::gameOver(int r, int c)
+int CSnake::gameOver(int r, int c) const
 {
 	int ret = 0;
 	if( !(r >= 1 && c >= 1 && r <= H && c <= W) )
@@ -150,7 +152,8 @@ int CSnake::changeDirection(int d)
 	static const int v[] = {DOWN, UP, RIGHT, LEFT};	
 	if(v[d] == dir_)
 	{
-		return ret;
+		cout << "wr dir: old " << dir_ << " new " << d << endl; 
+		//return ret;
 	}
 
 	dir_ = d;
@@ -160,7 +163,7 @@ int CSnake::changeDirection(int d)
 int CSnake::putApple()
 {
 	int ret = 0;
-	if(snake_.length() == W * H)
+	if(snake_.length() / 2 == W * H)
 	{
 		cout << "full" << endl;
 		return ret = -1;

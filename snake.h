@@ -24,8 +24,9 @@ public:
 		RIGHT = 3	
 	};
 
-private:
 	static const int direction_[4][2]; 
+
+private:
 
 	int dir_;
 	std::pair<int, int> appleLoc_;
@@ -35,12 +36,16 @@ private:
 public:
 	CSnake();
 
+	int getDir() const  { return dir_; };
+	std::pair<int, int> getAppleLoc() const  { return appleLoc_; };
+	std::string getSnake() const { return snake_; };
+
 	void resetPlat();
 	int kbhit();
 	int getkb();
 	
 	int draw();
-	int gameOver(int, int);
+	int gameOver(int, int) const;
 	int putApple(); 
 	int changeDirection(int);
 	int go();
