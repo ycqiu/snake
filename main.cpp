@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include "snake.h"
+#include "ai.h"
 
 using namespace std;
 
@@ -21,10 +22,11 @@ int kbhit()
 	tv.tv_usec = 500 * 1000;
 	FD_ZERO(&fds);
 	FD_SET(STDIN_FILENO, &fds);
-	int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+	//int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+	int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, NULL);
 	if(res > 0)
 	{
-		//select(0, NULL, NULL, NULL, &tv);	
+	//	select(0, NULL, NULL, NULL, &tv);	
 	}
 
 	return FD_ISSET(STDIN_FILENO, &fds);
@@ -50,10 +52,12 @@ int main()
 	int ret = 0;
 	nonblock(NB_ENABLE);
 	CSnake game;
+	//CAi ai(game);
+	CCleverAi ai(game);
 	while(ret == 0)
 	{
 		game.draw();
-		if(kbhit())
+/*		if(kbhit())
 		{
 			int key = game.getkb();
 			if(key == -1)
@@ -62,9 +66,23 @@ int main()
 			}
 			game.changeDirection(key);	
 		}
+*/
+		int dir = ai.calcul();
+		if(dir == CSnake::INVALID)
+		{
+			cout << "ai error" << endl;
+			break;
+		}
+
+		//	cout << "dir " << dir << endl;	
+		game.changeDirection(dir);
 
 		ret = game.go();
-		//Sleep(300);
+		if(ret < 0)
+		{
+			cout << "ret " << ret << endl;
+		}
+		Sleep(300);
 	}
 	return 0;
 }
