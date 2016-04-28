@@ -4,17 +4,19 @@
 #include <time.h>
 #include <stdlib.h>
 #include "ai.h"
+#include "log.h"
 
 using namespace std;
 
 
 void printSnake(const std::string& s)
 {
+	/*
 	for(int i = 0; i < s.length(); i += 2)	
 	{
-//		cout << (int)s[i] << " " << (int)s[i + 1] << "| ";
+		cout << (int)s[i] << " " << (int)s[i + 1] << "| ";
 	}
-
+	*/
 }
 
 int CAi::calcul()
@@ -34,9 +36,8 @@ int CAi::calcul()
 			continue;
 		}
 		
-		int r = snakeLoc.first + CSnake::direction_[t][0];
-		int c = snakeLoc.second + CSnake::direction_[t][1];
-		//cout << r << " " << c << endl;
+		int r = snakeLoc.first + CSnake::direction[t][0];
+		int c = snakeLoc.second + CSnake::direction[t][1];
 		int ret = game_.gameOver(r, c);
 		if(ret == 0)
 		{
@@ -67,28 +68,22 @@ int CCleverAi::bfs(std::pair<int, int> goal)
 		if(snake[0] == goal.first &&
 				snake[1] == goal.second)
 		{
-			//cout << "bfs ok" << endl;
 			ret = calculPath(snake);
-	/*		cout << "path: " << endl;
-			while(path_.empty() == false)
+			if(ret < 0)
 			{
-				std::pair<int, int > p = path_.top();
- 				path_.pop();
-				std::cout << p.first << " " << p.second << std::endl;	
+				ERROR_LOG("bfs ok, but calculPath ret: %d", ret);
+				return ret = -2;
 			}
-			exit(-1);
-	*/	
 			return ret; 
 		}
 
 		for(int i = 0; i < 4; ++i)	
 		{
-			int r = snake[0] + CSnake::direction_[i][0];	
-			int c = snake[1] + CSnake::direction_[i][1];	
+			int r = snake[0] + CSnake::direction[i][0];	
+			int c = snake[1] + CSnake::direction[i][1];	
 
 			if( !(r >= 1 && c >= 1 && r <= CSnake::H && c <= CSnake::W) )
 			{
-				//cout << "撞墙" << endl;
 				continue;
 			}
 
@@ -111,7 +106,6 @@ int CCleverAi::bfs(std::pair<int, int> goal)
 			{
 				continue;
 			}
-
 
 			std::string newSnake; 
 			newSnake += char(r);
@@ -139,13 +133,14 @@ int CCleverAi::calcul()
 		pair<int, int> d = path_.top();  path_.pop();
 		for(int i = 0; i < 4; ++i)
 		{
-			if(d.first == CSnake::direction_[i][0] &&
-				d.second == CSnake::direction_[i][1])
+			if(d.first == CSnake::direction[i][0] &&
+				d.second == CSnake::direction[i][1])
 			{
-				cout << "dir " << i << endl;
+				//cout << "dir " << i << endl;
 				return i;
 			}
 		}
+		ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
 		return -1;
 	}
 
@@ -154,6 +149,7 @@ int CCleverAi::calcul()
 	int ret = bfs(appleLoc);	
 	if(ret)
 	{
+		ERROR_LOG("bfs ret: %d", ret);
 		return -2;
 	}
 	return calcul();
@@ -163,12 +159,14 @@ int CCleverAi::calcul()
 int CCleverAi::calculPath(const std::string& g)
 {
 	cout << "----------------" << endl;
+	INFO_LOG("visit_ size: %d", (int)visit_.size());
 	std::string goal = g;
 	while(1)
 	{
 		std::map<std::string, std::string>::iterator iter = visit_.find(goal);
 		if(iter == visit_.end())
 		{
+			ERROR_LOG("no find goal: %s", goal.c_str());
 			return -1;
 		}
 
@@ -178,6 +176,7 @@ int CCleverAi::calculPath(const std::string& g)
 		//cout << endl;
 		if(preg == goal)
 		{
+			INFO_LOG("path len: %d", (int)path_.size());
 			return 0;
 		}
 		

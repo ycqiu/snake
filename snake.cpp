@@ -5,11 +5,12 @@
 #include <time.h>
 #include <iostream>
 #include "snake.h"
+#include "log.h"
 
 using namespace std;
 
 
-const int CSnake::direction_[4][2] = {
+const int CSnake::direction[4][2] = {
 		{-1, 0},  
 		{1, 0},
 		{0, -1},
@@ -20,9 +21,9 @@ CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 { 
 	snake_ += char(H / 2 + 1);
 	snake_ += char(W / 2 + 1);
-	dir_ = DOWN;
-//	putApple();
-	appleLoc_ = make_pair(1, 2);
+	dir_ = RIGHT;
+	putApple();
+//	appleLoc_ = make_pair(1, 2);
 	resetPlat();
 }
 
@@ -39,6 +40,7 @@ int CSnake::draw()
 	int ret = 0;
 	if(snake_.length() % 2)
 	{
+		ERROR_LOG("snake length: %d", snake_.length());	
 		return ret = -1;
 	}
 
@@ -89,7 +91,7 @@ int CSnake::gameOver(int r, int c) const
 	int ret = 0;
 	if( !(r >= 1 && c >= 1 && r <= H && c <= W) )
 	{
-		//cout << "撞墙" << endl;
+		ERROR_LOG("hit wall");
 		return ret = -1;
 	}
 
@@ -98,7 +100,7 @@ int CSnake::gameOver(int r, int c) const
 	{
 		if(r == snake_[i] && c == snake_[i + 1])	
 		{
-		//	cout << "吃到自己" << endl;
+			ERROR_LOG("eat self");
 			return ret = -2;
 		}
 	}
@@ -109,12 +111,12 @@ int CSnake::gameOver(int r, int c) const
 int CSnake::go()
 {
 	int ret = 0;
-	int r = snake_[0] + direction_[dir_][0];
-	int c = snake_[1] + direction_[dir_][1];
+	int r = snake_[0] + direction[dir_][0];
+	int c = snake_[1] + direction[dir_][1];
 	ret = gameOver(r, c);
 	if(ret)
 	{
-	//	cout << "gameOver: " << ret << endl;
+		ERROR_LOG("gameOver ret: %d", ret);
 		return ret = -1;	
 	}
 
@@ -130,7 +132,8 @@ int CSnake::go()
 		ret = putApple();
 		if(ret)
 		{
-			return ret = -2;
+			INFO_LOG("putApple ret: %d", ret);
+			return ret = 1;
 		}
 	}
 	else
@@ -145,15 +148,25 @@ int CSnake::changeDirection(int d)
 	int ret = 0;	
 	if( !(d >= UP && d <= RIGHT) )
 	{
+		ERROR_LOG("out range dir: %d", d);
 		return ret = -1;
 	}
-	
+/*	
 	//上下不能转换  左右不能转换		
 	static const int v[] = {DOWN, UP, RIGHT, LEFT};	
 	if(v[d] == dir_)
 	{
 		cout << "wr dir: old " << dir_ << " new " << d << endl; 
 		//return ret;
+	}
+*/
+	//蛇头和蛇的第二个节点不能相撞,如果撞上了表示该方向不能走
+	if(snake_[0] + direction[d][0] == snake_[2] &&
+		snake_[1] + direction[d][1] == snake_[3]) 
+	{
+		//cout << "wr dir: old " << dir_ << " new " << d << endl; 
+		INFO_LOG("wrong dir, old: %d, new: %d", dir_, d);
+		return ret = 1;
 	}
 
 	dir_ = d;
@@ -165,7 +178,7 @@ int CSnake::putApple()
 	int ret = 0;
 	if(snake_.length() / 2 == W * H)
 	{
-		cout << "full" << endl;
+		INFO_LOG("plat full");
 		return ret = -1;
 	}
 	resetPlat();

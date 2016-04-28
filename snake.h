@@ -24,14 +24,13 @@ public:
 		RIGHT = 3	
 	};
 
-	static const int direction_[4][2]; 
+	static const int direction[4][2]; 
 
 private:
-
 	int dir_;
 	std::pair<int, int> appleLoc_;
 	std::string snake_;   //snake_[0],snake_[1]表示头部坐标
-	std::vector<std::string> plat_;  //横纵下表都从1开始
+	std::vector<std::string> plat_;  //横纵下标都从1开始
 
 public:
 	CSnake();

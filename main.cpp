@@ -4,6 +4,7 @@
 #include <sys/select.h>
 #include <unistd.h>
 #include <termios.h>
+#include "log.h"
 #include "snake.h"
 #include "ai.h"
 
@@ -50,37 +51,58 @@ void nonblock(int state)
 int main()
 {
 	int ret = 0;
+	INIT_LOG2("snake", "log.conf");
 	nonblock(NB_ENABLE);
 	CSnake game;
 	//CAi ai(game);
 	CCleverAi ai(game);
-	while(ret == 0)
+	while(ret >= 0)
 	{
-		game.draw();
-/*		if(kbhit())
+		ret = game.draw();
+		if(ret < 0)
 		{
-			int key = game.getkb();
-			if(key == -1)
-			{
-				return 0;
-			}
-			game.changeDirection(key);	
-		}
-*/
-		int dir = ai.calcul();
-		if(dir == CSnake::INVALID)
-		{
-			cout << "ai error" << endl;
+			ERROR_LOG("draw ret: %d", ret);
 			break;
 		}
 
-		//	cout << "dir " << dir << endl;	
-		game.changeDirection(dir);
+/*		if(kbhit())
+		{
+			int dir = game.getkb();
+			if(dir == -1)
+			{
+				return 0;
+			}
+			game.changeDirection(dir);	
+		}
+*/
+		int dir = ai.calcul();
+		if(dir < 0)
+		{
+			ERROR_LOG("calcul ret: %d", dir);
+			break;
+		}
+
+		DEBUG_LOG("dir: %d, vec(%d, %d)", 
+				dir, CSnake::direction[dir][0], CSnake::direction[dir][1]);
+
+		ret = game.changeDirection(dir);
+		if(ret < 0)
+		{
+			ERROR_LOG("changeDirection ret: %d", ret);
+			break;
+		}
 
 		ret = game.go();
 		if(ret < 0)
 		{
-			cout << "ret " << ret << endl;
+			ERROR_LOG("go ret: %d", ret);
+			break;
+		}
+		else if(ret > 0)
+		{
+			cout << "you win" << endl;	
+			INFO_LOG("go ret: %d, snake eat all apple", ret);
+			break;
 		}
 		Sleep(300);
 	}
