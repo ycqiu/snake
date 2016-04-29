@@ -22,8 +22,8 @@ CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 	snake_ += char(H / 2 + 1);
 	snake_ += char(W / 2 + 1);
 	dir_ = RIGHT;
-	putApple();
-//	appleLoc_ = make_pair(1, 2);
+//	putApple();
+	appleLoc_ = make_pair(H / 2 + 1, 2);
 	resetPlat();
 }
 
@@ -205,6 +205,7 @@ int CSnake::putApple()
 	srand(time(NULL));
 	int index = rand() % nullPos.size();
 	appleLoc_ = nullPos[index];
+	INFO_LOG("apple: (%d, %d)", appleLoc_.first, appleLoc_.second);
 	return 0;
 }
 
@@ -236,3 +237,15 @@ int CSnake::getkb()
 
 	return key;
 }
+
+void CSnake::printSnake(const std::string& s, const std::string name)
+{
+/*	DEBUG_LOG("%s: ", name.c_str());
+	for(std::string::size_type i = 0; i < s.length(); i += 2)	
+	{
+		//cout << (int)s[i] << " " << (int)s[i + 1] << "| ";
+		DEBUG_LOG("%d %d| ", (int)s[i], (int)s[i + 1]); 
+	}
+	*/
+}
+

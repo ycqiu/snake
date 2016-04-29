@@ -12,8 +12,8 @@ public:
 	enum 
 	{
 		INVALID = -1,
-		H = 10,	
-		W = 10
+		H = 20,	
+		W = 20
 	};
 
 	enum
@@ -25,6 +25,9 @@ public:
 	};
 
 	static const int direction[4][2]; 
+
+public:
+	static void printSnake(const std::string& s, const std::string name = "");
 
 private:
 	int dir_;
