@@ -19,42 +19,9 @@ const int CSnake::direction[4][2] = {
 
 CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 { 
-	//snake_ += char(H / 2 + 1);
-	//snake_ += char(W / 2 + 1);
-	//dir_ = RIGHT;
-//	putApple();
-	//appleLoc_ = make_pair(H / 2 + 1, 2);
-		dir_ = DOWN;
-
-	snake_ += char(3);
-	snake_ += char(4);
-
-	snake_ += char(2);
-	snake_ += char(4);
-
-	snake_ += char(2);
-	snake_ += char(3);
-
-	snake_ += char(2);
-	snake_ += char(2);
-
-	snake_ += char(2);
-	snake_ += char(1);
-
 	snake_ += char(1);
 	snake_ += char(1);
-
-	snake_ += char(1);
-	snake_ += char(2);
-
-	snake_ += char(1);
-	snake_ += char(3);
-
-	snake_ += char(1);
-	snake_ += char(4);
-
-	appleLoc_ = make_pair(3, 3);
-
+	putApple();
 	resetPlat();
 }
 
@@ -250,7 +217,6 @@ int CSnake::putApple()
 	srand(time(NULL));
 	int index = rand() % nullPos.size();
 	appleLoc_ = nullPos[index];
-	appleLoc_ = make_pair(4, 4);
 	INFO_LOG("new apple: (%d, %d)", appleLoc_.first, appleLoc_.second);
 	return 0;
 }
