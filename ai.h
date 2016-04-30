@@ -23,10 +23,11 @@ struct CSnakeInfo
 {
 	std::string snake_;
 	int level_;
-	int step_;
+	int curve_;
+	int dir_;
 
-	CSnakeInfo(const std::string& a = "", int l = 0, int s = 0) :
-		snake_(a), level_(l), step_(s) {}
+	CSnakeInfo(const std::string& a = "", int l = 0, int s = 0, int d = -1) :
+		snake_(a), level_(l), curve_(s), dir_(d) {}
 
 	bool operator<(const CSnakeInfo& b) const
 	{
@@ -34,8 +35,7 @@ struct CSnakeInfo
 		{
 			return  level_ > b.level_;
 		}
-		//return step_ <= b.step_;
-		return step_ >= b.step_;
+		return curve_ >= b.curve_;
 	}
 };
 
@@ -44,7 +44,7 @@ class CCleverAi : public CAi
 {
 private:
 	std::stack<std::pair<int, int> > path_;
-	std::map<std::string, std::string> visit_;
+	std::map<std::string, std::string > visit_;
 	std::vector<std::vector<int> > levelMap_;
 
 public:

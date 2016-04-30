@@ -48,7 +48,7 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 	int ret = 0;
 	initLevelMap(lvMp);
 	std::priority_queue<CSnakeInfo> q;
-	CSnakeInfo info(snk, 1, 0);
+	CSnakeInfo info(snk, 1, 0, -1);
 	q.push(info);
 	visit[info.snake_] = info.snake_;
 	++lvMp[info.snake_[0]][info.snake_[1]];
@@ -115,15 +115,12 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 				continue;
 			}
 
-			//检查当前蛇头位置是否与蛇身重合(不包括蛇尾,因为蛇已经移动了)	
 			int len = snake.length();
-			//蛇的长度为2时,需要检查蛇的第二个节点(因为该节点也是蛇尾),是否与蛇头重合,
-			//主要为了排除 上下/左右方向不能变换问题
 			len = (len == 4 ? len : len - 2);
 			int flag = 1;
-			for(int i = 0; i < len; i += 2)
+			for(int j = 0; j < len; j += 2)
 			{
-				if(r == snake[i] && c == snake[i + 1])	
+				if(r == snake[j] && c == snake[j + 1])	
 				{
 					flag = 0;
 					break;
@@ -143,10 +140,13 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 
 			if(visit.find(newSnake) == visit.end())			
 			{
-				//CSnake::printSnake(newSnake);
-				//CSnake::printSnake(snake);
-				//cout << endl;
-				q.push(CSnakeInfo(newSnake, ++lvMp[r][c], info.step_ + 1));
+				int curve = info.curve_;
+				if(info.dir_ != i)
+				{
+					++curve;
+				}
+
+				q.push(CSnakeInfo(newSnake, ++lvMp[r][c], curve, i));
 				visit[newSnake] = snake;
 			}
 		}
