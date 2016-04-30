@@ -54,6 +54,7 @@ int main()
 	INIT_LOG2("snake", "log.conf");
 	nonblock(NB_ENABLE);
 	CSnake game;
+	game.printPlat();
 	//CAi ai(game);
 	CCleverAi ai(game);
 	while(ret >= 0)
@@ -98,14 +99,14 @@ int main()
 			ERROR_LOG("go ret: %d", ret);
 			break;
 		}
-		else if(ret > 0)
+		else if(ret == 1)
 		{
 			cout << "you win" << endl;	
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
-		//Sleep(300);
-		Sleep(50);
+		Sleep(300);
+	//	Sleep(50);
 	}
 	return 0;
 }
