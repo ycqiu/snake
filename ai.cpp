@@ -63,7 +63,7 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 			if(num == 1)
 			{
 				INFO_LOG("sec succ");
-				//return ret = 0;
+				return ret = 0;
 			}
 			
 			//DEBUG_LOG("first succ");
@@ -94,11 +94,6 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 					//INFO_LOG("sec fail");
 					continue;	
 				}
-			}
-			
-			if(num == 1)
-			{
-				//sleep(2);
 			}
 
 			ret = calculPath(snake, visit);
@@ -231,3 +226,52 @@ void CCleverAi::initLevelMap(std::vector<std::vector<int> >& lvMp)
 	}
 }
 	
+
+
+
+/////////////////
+int CNormalAi::calcul()	
+{
+	int dir = game_.getDir();
+	std::string snake = game_.getSnake();
+	std::pair<int, int> snakeLoc = std::make_pair(snake[0], snake[1]);
+	if(snakeLoc.first == 1)	
+	{
+		if(snakeLoc.second == CSnake::W)
+		{
+			return CSnake::DOWN;
+		}
+		return CSnake::RIGHT;			
+	}
+		
+	if(dir == CSnake::DOWN)
+	{
+		if(snakeLoc.first == CSnake::H)
+		{
+			return CSnake::LEFT;
+		}
+		return  dir;
+	}
+
+	if(dir == CSnake::LEFT)
+	{
+		if(snakeLoc.first == 2)
+		{
+			return  CSnake::DOWN;
+		}
+		return  CSnake::UP;
+	}
+
+	if(dir == CSnake::UP)	
+	{
+		if(snakeLoc.first == 2)	
+		{
+			if(snakeLoc.second != 1)	
+			{
+				return CSnake::LEFT;
+			}
+		}
+		return dir;
+	}
+	return -1;
+}

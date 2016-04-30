@@ -57,4 +57,16 @@ public:
 	int calculPath(const std::string& goal, std::map<std::string, std::string>&);
 };
 
+//仅仅是个演示而已
+class CNormalAi : public CAi
+{
+private:
+
+public:
+	CNormalAi(const CSnake& g) : CAi(g) {}
+
+	virtual int calcul();	
+};
+
+
 #endif 
