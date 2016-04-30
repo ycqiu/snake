@@ -56,8 +56,8 @@ int main()
 	CSnake game;
 	game.printPlat();
 	//CAi ai(game);
-	//CCleverAi ai(game);
-	CNormalAi ai(game);
+	CCleverAi ai(game);
+	//CNormalAi ai(game);
 	while(ret >= 0)
 	{
 		ret = game.draw();
