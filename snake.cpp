@@ -19,11 +19,42 @@ const int CSnake::direction[4][2] = {
 
 CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 { 
-	snake_ += char(H / 2 + 1);
-	snake_ += char(W / 2 + 1);
-	dir_ = RIGHT;
+	//snake_ += char(H / 2 + 1);
+	//snake_ += char(W / 2 + 1);
+	//dir_ = RIGHT;
 //	putApple();
-	appleLoc_ = make_pair(H / 2 + 1, 2);
+	//appleLoc_ = make_pair(H / 2 + 1, 2);
+		dir_ = DOWN;
+
+	snake_ += char(3);
+	snake_ += char(4);
+
+	snake_ += char(2);
+	snake_ += char(4);
+
+	snake_ += char(2);
+	snake_ += char(3);
+
+	snake_ += char(2);
+	snake_ += char(2);
+
+	snake_ += char(2);
+	snake_ += char(1);
+
+	snake_ += char(1);
+	snake_ += char(1);
+
+	snake_ += char(1);
+	snake_ += char(2);
+
+	snake_ += char(1);
+	snake_ += char(3);
+
+	snake_ += char(1);
+	snake_ += char(4);
+
+	appleLoc_ = make_pair(3, 3);
+
 	resetPlat();
 }
 
@@ -35,6 +66,33 @@ void CSnake::resetPlat()
 	}
 }
 
+void CSnake::fillPlat()
+{
+	resetPlat();
+	plat_[appleLoc_.first][appleLoc_.second] = 'O';
+	for(std::string::size_type i = 0; i < snake_.length(); i += 2)
+	{
+		int r = snake_[i];
+		int c = snake_[i + 1];
+		
+		char v = '*';
+		//head
+		if(i == 0)
+		{
+			static const char* pv = "^v<>"; 
+			v = *(pv + dir_);
+		}
+
+		if(i != 0 && i == snake_.length() - 2)
+		{
+			v = 't';
+		}
+
+		plat_[r][c] = v;
+	}
+}
+
+
 int CSnake::draw()
 {
 	int ret = 0;
@@ -45,29 +103,7 @@ int CSnake::draw()
 	}
 
 	system("clear");
-	resetPlat();
-	plat_[appleLoc_.first][appleLoc_.second] = 'O';
-	for(std::string::size_type i = 0; i < snake_.length(); i += 2)
-	{
-		int r = snake_[i];
-		int c = snake_[i + 1];
-		char v = '*';
-		//head
-		if(i == 0)
-		{
-			static const char* pv = "^v<>"; 
-			if(dir_ >= UP && dir_ <= RIGHT)
-			{
-				v = *(pv + dir_);
-			}
-			else
-			{
-				return ret = -2;
-			}
-		}
-		plat_[r][c] = v;
-	}
-	
+	fillPlat();
 	const char block = '#';
 	std::string line(2 * W + 2, block);
 	//std::string line( W + 2, block);
@@ -128,13 +164,22 @@ int CSnake::go()
 	//能不能吃苹果
 	if(r == appleLoc_.first && c == appleLoc_.second)
 	{
+		/*
+		if(snake_.length() > 10)
+		{
+			snake_.erase(snake_.length() - 2, 2);
+		}
+		*/
 		//重新放苹果		
 		ret = putApple();
+		printPlat();	
+		//sleep(2);
 		if(ret)
 		{
 			INFO_LOG("putApple ret: %d", ret);
 			return ret = 1;
 		}
+		return ret = 2;
 	}
 	else
 	{
@@ -205,7 +250,8 @@ int CSnake::putApple()
 	srand(time(NULL));
 	int index = rand() % nullPos.size();
 	appleLoc_ = nullPos[index];
-	INFO_LOG("apple: (%d, %d)", appleLoc_.first, appleLoc_.second);
+	appleLoc_ = make_pair(4, 4);
+	INFO_LOG("new apple: (%d, %d)", appleLoc_.first, appleLoc_.second);
 	return 0;
 }
 
@@ -238,14 +284,27 @@ int CSnake::getkb()
 	return key;
 }
 
-void CSnake::printSnake(const std::string& s, const std::string name)
+void CSnake::printSnake(const std::string& s, const std::string& name)
 {
-/*	DEBUG_LOG("%s: ", name.c_str());
+	DEBUG_LOG("%s: ", name.c_str());
 	for(std::string::size_type i = 0; i < s.length(); i += 2)	
 	{
 		//cout << (int)s[i] << " " << (int)s[i + 1] << "| ";
 		DEBUG_LOG("%d %d| ", (int)s[i], (int)s[i + 1]); 
 	}
-	*/
 }
 
+void CSnake::printPlat(const std::string& name)
+{
+	fillPlat();
+	DEBUG_LOG("%s:", name.c_str());
+	const char block = '#';
+	std::string line(W + 2, block);
+	DEBUG_LOG("%s", line.c_str());
+	for(int i = 1; i <= H; ++i)
+	{
+		//DEBUG_LOG("#%s#", (plat_[i].c_str() + 1));
+		DEBUG_LOG("#%s#", (plat_[i].c_str() + 1));
+	}
+	DEBUG_LOG("%s", line.c_str());
+}
