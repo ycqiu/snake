@@ -3,6 +3,7 @@
 #include <string>
 #include <time.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "ai.h"
 #include "log.h"
 
@@ -41,31 +42,65 @@ int CAi::calcul()
 
 
 /////////////////////
-int CCleverAi::bfs(std::pair<int, int> goal, std::map<std::string, std::string>& visit 
-		, std::vector<std::vector<int> >& lvMp)
+int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
+	   	std::map<std::string, std::string>& visit, std::vector<std::vector<int> >& lvMp, int num)
 {
-	int ret = -1;
-	//int dir = game_.getDir();
-//	std::pair<int, int> snakeLoc = std::make_pair(snake[0], snake[1]);
-//	std::pair<int, int> appleLoc = game_.getAppleLoc();
-
+	int ret = 0;
 	initLevelMap(lvMp);
-	//std::queue<std::string>	q;
 	std::priority_queue<CSnakeInfo> q;
-	CSnakeInfo info(game_.getSnake(), 1, 0);
+	CSnakeInfo info(snk, 1, 0);
 	q.push(info);
 	visit[info.snake_] = info.snake_;
 	++lvMp[info.snake_[0]][info.snake_[1]];
 	while(q.empty() == false)
 	{
 		info = q.top();  q.pop();
-		DEBUG_LOG("level: %d, step: %d", info.level_, info.step_);
+		//DEBUG_LOG("level: %d, step: %d", info.level_, info.step_);
 		const std::string snake = info.snake_;
 		if(snake[0] == goal.first &&
 				snake[1] == goal.second)
 		{
-			//std::map<std::string, std::string>& vs;
-			//std::vector<std::vector<int> > lvMp;
+			if(num == 1)
+			{
+				INFO_LOG("sec succ");
+				//return ret = 0;
+			}
+			
+			//DEBUG_LOG("first succ");
+			if(num == 0)
+			{
+				std::map<std::string, std::string> vs;
+				std::vector<std::vector<int> > lv;
+
+				std::string nextSnake;
+			    nextSnake += char(goal.first); 
+				nextSnake += char(goal.second);
+				nextSnake += visit[snake];
+				
+				int len = nextSnake.length();
+				if(len == 2)
+				{
+					ERROR_LOG("not find nextSnake");
+					return -1;	
+				}
+				std::pair<int, int> tail(nextSnake[len - 2], nextSnake[len - 1]); 
+				//CSnake::printSnake(nextSnake, "nextSnake");
+				//INFO_LOG("sec begin");
+				INFO_LOG("tail pos: (%d, %d)", tail.first, tail.second);
+				ret = bfs(tail, nextSnake, vs, lv, num + 1);
+				INFO_LOG("sec ret: %d", ret);
+				if(ret < 0)
+				{
+					//INFO_LOG("sec fail");
+					continue;	
+				}
+			}
+			
+			if(num == 1)
+			{
+				//sleep(2);
+			}
+
 			ret = calculPath(snake, visit);
 			if(ret < 0)
 			{
@@ -113,15 +148,15 @@ int CCleverAi::bfs(std::pair<int, int> goal, std::map<std::string, std::string>&
 
 			if(visit.find(newSnake) == visit.end())			
 			{
-				CSnake::printSnake(newSnake);
-				CSnake::printSnake(snake);
+				//CSnake::printSnake(newSnake);
+				//CSnake::printSnake(snake);
 				//cout << endl;
 				q.push(CSnakeInfo(newSnake, ++lvMp[r][c], info.step_ + 1));
 				visit[newSnake] = snake;
 			}
 		}
 	}
-	return ret;
+	return ret = -2;
 }
 
 int CCleverAi::calcul()
@@ -144,7 +179,7 @@ int CCleverAi::calcul()
 
 	std::pair<int, int> appleLoc = game_.getAppleLoc();
 	visit_.clear();
-	int ret = bfs(appleLoc, visit_, levelMap_);	
+	int ret = bfs(appleLoc, game_.getSnake(), visit_, levelMap_, 0);	
 	if(ret)
 	{
 		ERROR_LOG("bfs ret: %d", ret);
@@ -157,7 +192,7 @@ int CCleverAi::calcul()
 int CCleverAi::calculPath(const std::string& g, std::map<std::string, std::string>& vis)
 {
 //	cout << "----------------" << endl;
-	INFO_LOG("vis size: %d", (int)vis.size());
+	INFO_LOG("visite size: %d", (int)vis.size());
 	std::string goal = g;
 	while(1)
 	{
@@ -168,8 +203,8 @@ int CCleverAi::calculPath(const std::string& g, std::map<std::string, std::strin
 			return -1;
 		} 
 		std::string preg = iter->second; 
-		CSnake::printSnake(goal);
-		CSnake::printSnake(preg);
+		//CSnake::printSnake(goal);
+		//CSnake::printSnake(preg);
 		//cout << endl;
 		if(preg == goal)
 		{
