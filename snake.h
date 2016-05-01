@@ -12,8 +12,8 @@ public:
 	enum 
 	{
 		INVALID = -1,
-		H = 20,	
-		W = 20
+		H = 4,	
+		W = 4
 	};
 
 	enum
@@ -27,7 +27,7 @@ public:
 	static const int direction[4][2]; 
 
 public:
-	static void printSnake(const std::string& s, const std::string name = "");
+	static void printSnake(const std::string& s, const std::string& name = "");
 
 private:
 	int dir_;
@@ -47,10 +47,12 @@ public:
 	int getkb();
 	
 	int draw();
+	void fillPlat();
 	int gameOver(int, int) const;
 	int putApple(); 
 	int changeDirection(int);
 	int go();
+	void printPlat(const std::string& name = "");
 };
 
 #endif 

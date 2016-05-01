@@ -51,7 +51,8 @@ public:
 
 	virtual int calcul();	
 	void initLevelMap(std::vector<std::vector<int> >&);
-	int bfs(std::pair<int, int> goal, std::map<std::string, std::string>& , std::vector<std::vector<int> >&);
+	int bfs(std::pair<int, int> goal, const std::string& snake,
+		   	std::map<std::string, std::string>&, std::vector<std::vector<int> >&, int num);
 	int calculPath(const std::string& goal, std::map<std::string, std::string>&);
 };
 
