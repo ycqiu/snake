@@ -17,19 +17,10 @@ const int NB_ENABLE = 1;
 	
 int kbhit() 
 {
-	//struct timeval tv;
 	fd_set fds;
-//	tv.tv_sec = 0;
-//	tv.tv_usec = 500 * 1000;
 	FD_ZERO(&fds);
 	FD_SET(STDIN_FILENO, &fds);
-	//int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
-	int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, NULL);
-	if(res > 0)
-	{
-	//	select(0, NULL, NULL, NULL, &tv);	
-	}
-
+	select(STDIN_FILENO + 1, &fds, NULL, NULL, NULL);
 	return FD_ISSET(STDIN_FILENO, &fds);
 }
 
@@ -54,8 +45,6 @@ int main()
 	INIT_LOG2("snake", "log.conf");
 	nonblock(NB_ENABLE);
 	CSnake game;
-	//CAi ai(game);
-	CCleverAi ai(game);
 	while(ret >= 0)
 	{
 		ret = game.draw();
@@ -65,31 +54,24 @@ int main()
 			break;
 		}
 
-/*		if(kbhit())
+		if(kbhit())
 		{
 			int dir = game.getkb();
 			if(dir == -1)
 			{
 				return 0;
 			}
-			game.changeDirection(dir);	
-		}
-*/
-		int dir = ai.calcul();
-		if(dir < 0)
-		{
-			ERROR_LOG("calcul ret: %d", dir);
-			break;
-		}
 
-		DEBUG_LOG("dir: %d, vec(%d, %d)", 
-				dir, CSnake::direction[dir][0], CSnake::direction[dir][1]);
-
-		ret = game.changeDirection(dir);
-		if(ret < 0)
-		{
-			ERROR_LOG("changeDirection ret: %d", ret);
-			break;
+			ret = game.changeDirection(dir);	
+			if(ret < 0)
+			{
+				ERROR_LOG("changeDirection ret: %d", ret);	
+				break;
+			}
+			else if(ret == 1)
+			{
+				continue;
+			}
 		}
 
 		ret = game.go();
@@ -98,14 +80,12 @@ int main()
 			ERROR_LOG("go ret: %d", ret);
 			break;
 		}
-		else if(ret > 0)
+		else if(ret == 1)
 		{
 			cout << "you win" << endl;	
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
-		//Sleep(300);
-		Sleep(50);
 	}
 	return 0;
 }
