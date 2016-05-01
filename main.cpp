@@ -17,10 +17,10 @@ const int NB_ENABLE = 1;
 	
 int kbhit() 
 {
-	//struct timeval tv;
-	fd_set fds;
+//	struct timeval tv;
 //	tv.tv_sec = 0;
 //	tv.tv_usec = 500 * 1000;
+	fd_set fds;
 	FD_ZERO(&fds);
 	FD_SET(STDIN_FILENO, &fds);
 	//int res = select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
@@ -106,7 +106,7 @@ int main()
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
-		//Sleep(300);
+	//	Sleep(300);
 		Sleep(50);
 	}
 	return 0;

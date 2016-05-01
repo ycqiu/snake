@@ -46,28 +46,21 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 	   	std::map<std::string, std::string>& visit, std::vector<std::vector<int> >& lvMp, int num)
 {
 	int ret = 0;
+	visit.clear();
 	initLevelMap(lvMp);
 	std::priority_queue<CSnakeInfo> q;
-	CSnakeInfo info(snk, 1, 0, -1);
+	CSnakeInfo info(snk, 1, 0, -1, -1, goal);
 	q.push(info);
 	visit[info.snake_] = info.snake_;
 	++lvMp[info.snake_[0]][info.snake_[1]];
 	while(q.empty() == false)
 	{
 		info = q.top();  q.pop();
-		//DEBUG_LOG("level: %d, step: %d", info.level_, info.step_);
-		const std::string snake = info.snake_;
+		const std::string& snake = info.snake_;
 		if(snake[0] == goal.first &&
 				snake[1] == goal.second)
 		{
-			if(num == 1)
-			{
-				INFO_LOG("sec succ");
-				return ret = 0;
-			}
-			
-			//DEBUG_LOG("first succ");
-			if(num == 0)
+			if(num == 0)  //寻找蛇尾
 			{
 				std::map<std::string, std::string> vs;
 				std::vector<std::vector<int> > lv;
@@ -84,16 +77,17 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 					return -1;	
 				}
 				std::pair<int, int> tail(nextSnake[len - 2], nextSnake[len - 1]); 
-				//CSnake::printSnake(nextSnake, "nextSnake");
-				//INFO_LOG("sec begin");
-				INFO_LOG("tail pos: (%d, %d)", tail.first, tail.second);
 				ret = bfs(tail, nextSnake, vs, lv, num + 1);
-				INFO_LOG("sec ret: %d", ret);
 				if(ret < 0)
 				{
-					//INFO_LOG("sec fail");
 					continue;	
 				}
+			}
+
+			if(num == 1) 
+			{
+				DEBUG_LOG("sec succ");
+				return ret = 0;
 			}
 
 			ret = calculPath(snake, visit);
@@ -115,7 +109,10 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 				continue;
 			}
 
+			//检查当前蛇头位置是否与蛇身重合(不包括蛇尾,因为蛇已经移动了)	
 			int len = snake.length();
+			//蛇的长度为2时,需要检查蛇的第二个节点(因为该节点也是蛇尾),是否与蛇头重合,
+			//主要为了排除 上下/左右方向不能变换问题
 			len = (len == 4 ? len : len - 2);
 			int flag = 1;
 			for(int j = 0; j < len; j += 2)
@@ -140,13 +137,8 @@ int CCleverAi::bfs(std::pair<int, int> goal, const std::string& snk,
 
 			if(visit.find(newSnake) == visit.end())			
 			{
-				int curve = info.curve_;
-				if(info.dir_ != i)
-				{
-					++curve;
-				}
-
-				q.push(CSnakeInfo(newSnake, ++lvMp[r][c], curve, i));
+				int curve = (info.preDir_ != i ? info.curve_ + 1 : info.curve_);
+				q.push(CSnakeInfo(newSnake, ++lvMp[r][c], info.step_ + 1, curve, i, goal));
 				visit[newSnake] = snake;
 			}
 		}
@@ -164,7 +156,6 @@ int CCleverAi::calcul()
 			if(d.first == CSnake::direction[i][0] &&
 				d.second == CSnake::direction[i][1])
 			{
-				//cout << "dir " << i << endl;
 				return i;
 			}
 		}
@@ -173,7 +164,6 @@ int CCleverAi::calcul()
 	}
 
 	std::pair<int, int> appleLoc = game_.getAppleLoc();
-	visit_.clear();
 	int ret = bfs(appleLoc, game_.getSnake(), visit_, levelMap_, 0);	
 	if(ret)
 	{
@@ -186,7 +176,6 @@ int CCleverAi::calcul()
 
 int CCleverAi::calculPath(const std::string& g, std::map<std::string, std::string>& vis)
 {
-//	cout << "----------------" << endl;
 	INFO_LOG("visite size: %d", (int)vis.size());
 	std::string goal = g;
 	while(1)
@@ -194,13 +183,10 @@ int CCleverAi::calculPath(const std::string& g, std::map<std::string, std::strin
 		std::map<std::string, std::string>::iterator iter = vis.find(goal);
 		if(iter == vis.end())
 		{
-			ERROR_LOG("no find goal: %s", goal.c_str());
+			ERROR_LOG("not find goal: %s", goal.c_str());
 			return -1;
 		} 
 		std::string preg = iter->second; 
-		//CSnake::printSnake(goal);
-		//CSnake::printSnake(preg);
-		//cout << endl;
 		if(preg == goal)
 		{
 			INFO_LOG("path len: %d", (int)path_.size());

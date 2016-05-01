@@ -6,6 +6,7 @@
 #include <stack>
 #include <vector>
 #include <map>
+#include <cmath>
 #include "snake.h"
 
 class CAi
@@ -23,19 +24,45 @@ struct CSnakeInfo
 {
 	std::string snake_;
 	int level_;
-	int curve_;
-	int dir_;
+	int step_;
+	int curve_;   //转弯数
+	int preDir_;  //上一次移动的方向
+	std::pair<int, int> goal_;
 
-	CSnakeInfo(const std::string& a = "", int l = 0, int s = 0, int d = -1) :
-		snake_(a), level_(l), curve_(s), dir_(d) {}
+	CSnakeInfo(const std::string& a, int l, int s, int c, int d, std::pair<int, int> g) :
+		snake_(a), level_(l), step_(s), curve_(c), preDir_(d), goal_(g) {}
+
+	int dist() const
+	{
+		return std::abs(snake_[0] - goal_.first) + std::abs(snake_[1] - goal_.second);	
+	}
 
 	bool operator<(const CSnakeInfo& b) const
 	{
-		if(level_ != b.level_)
+		/*
+		if(level_ == b.level_)
 		{
+			if(curve_ == b.curve_)
+			{
+				return step_ + dist() >= b.step_ + b.dist();
+			}
+			return curve_ > b.curve_;
+		}
+		return  level_ > b.level_;
+		*/
+	
+		if(curve_ == b.curve_)
+		{
+			if(level_ == b.level_)
+			{
+				//return step_ >= b.step_;
+				return step_ + dist() >= b.step_ + b.dist();
+			}
 			return  level_ > b.level_;
 		}
-		return curve_ >= b.curve_;
+
+		return curve_ > b.curve_;	
+
 	}
 };
 

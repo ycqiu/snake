@@ -131,16 +131,9 @@ int CSnake::go()
 	//能不能吃苹果
 	if(r == appleLoc_.first && c == appleLoc_.second)
 	{
-		/*
-		if(snake_.length() > 10)
-		{
-			snake_.erase(snake_.length() - 2, 2);
-		}
-		*/
 		//重新放苹果		
 		ret = putApple();
 		printPlat();	
-		//sleep(2);
 		if(ret)
 		{
 			INFO_LOG("putApple ret: %d", ret);
@@ -163,20 +156,11 @@ int CSnake::changeDirection(int d)
 		ERROR_LOG("out range dir: %d", d);
 		return ret = -1;
 	}
-/*	
-	//上下不能转换  左右不能转换		
-	static const int v[] = {DOWN, UP, RIGHT, LEFT};	
-	if(v[d] == dir_)
-	{
-		cout << "wr dir: old " << dir_ << " new " << d << endl; 
-		//return ret;
-	}
-*/
+
 	//蛇头和蛇的第二个节点不能相撞,如果撞上了表示该方向不能走
 	if(snake_[0] + direction[d][0] == snake_[2] &&
 		snake_[1] + direction[d][1] == snake_[3]) 
 	{
-		//cout << "wr dir: old " << dir_ << " new " << d << endl; 
 		INFO_LOG("wrong dir, old: %d, new: %d", dir_, d);
 		return ret = 1;
 	}
@@ -269,7 +253,6 @@ void CSnake::printPlat(const std::string& name)
 	DEBUG_LOG("%s", line.c_str());
 	for(int i = 1; i <= H; ++i)
 	{
-		//DEBUG_LOG("#%s#", (plat_[i].c_str() + 1));
 		DEBUG_LOG("#%s#", (plat_[i].c_str() + 1));
 	}
 	DEBUG_LOG("%s", line.c_str());
