@@ -106,9 +106,9 @@ int main()
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
-	//	Sleep(300);
+//		Sleep(300);
 		Sleep(50);
 	}
-	return 0;
+	return ret;
 }
 

@@ -22,6 +22,7 @@ CSnake::CSnake() : dir_(RIGHT), appleLoc_(INVALID, INVALID), plat_(H + 1)
 	snake_ += char(1);
 	snake_ += char(1);
 	putApple();
+
 	resetPlat();
 }
 
