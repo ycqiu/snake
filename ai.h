@@ -39,18 +39,6 @@ struct CSnakeInfo
 
 	bool operator<(const CSnakeInfo& b) const
 	{
-		/*
-		if(level_ == b.level_)
-		{
-			if(curve_ == b.curve_)
-			{
-				return step_ + dist() >= b.step_ + b.dist();
-			}
-			return curve_ > b.curve_;
-		}
-		return  level_ > b.level_;
-		*/
-	
 		if(curve_ == b.curve_)
 		{
 			if(level_ == b.level_)
@@ -62,7 +50,6 @@ struct CSnakeInfo
 		}
 
 		return curve_ > b.curve_;	
-
 	}
 };
 
@@ -82,6 +69,7 @@ public:
 	int bfs(std::pair<int, int> goal, const std::string& snake,
 		   	std::map<std::string, std::string>&, std::vector<std::vector<int> >&, int num);
 	int calculPath(const std::string& goal, std::map<std::string, std::string>&);
+	int check(const std::string& snake);
 };
 
 //仅仅是个演示而已
