@@ -351,3 +351,218 @@ int CNormalAi::calcul()
 	return -1;
 }
 
+
+
+//////////////////////
+int CEfficientAi::fill(const std::string& snake, std::vector<std::string>& plat)
+{
+	plat.resize(CSnake::H + 1);	
+	for(std::vector<std::string>::size_type i = 0; i < plat.size(); ++i)
+	{
+		plat[i].assign(CSnake::W + 1, ' ');	
+	}
+	
+	for(std::string::size_type i = 0; i < snake.length(); i += 2)
+	{
+		int r = snake[i];
+		int c = snake[i + 1];
+		plat[r][c] = '*';
+	}	
+	return 0;
+}
+
+int CEfficientAi::bfs(std::string& snk, std::pair<int, int> goal, std::stack<std::pair<int, int> >& path)
+{
+	int ret = 0;
+	std::vector<std::string> plat;
+	fill(snk, plat);
+	plat[goal.first][goal.second] = ' ';
+
+	//std::priority_queue<CHeadInfo> q;
+	std::priority_queue<CHeadInfo> q;
+	std::pair<int, int> head(snk[0], snk[1]);
+	q.push(CHeadInfo(0, head, goal));	
+	plat[head.first][head.second] = '*';
+
+	std::map<std::pair<int, int>, std::pair<int, int> > pathMap;
+	pathMap[head] = head;
+
+	while(q.empty() == false)
+	{
+		CHeadInfo info = q.top();   q.pop();	
+
+		if(info.head_ == goal)
+		{
+			ret = getPath(goal, pathMap, path);
+			if(ret < 0)
+			{
+				ERROR_LOG("getPath ret: %d", ret);
+				return ret = -1;
+			}
+			return ret;
+		}
+
+		for(int i = 0; i < 4; ++i)
+		{
+			int r = info.head_.first + CSnake::direction[i][0];	
+			int c = info.head_.second + CSnake::direction[i][1];	
+
+			if( !(r >= 1 && c >= 1 && r <= CSnake::H && c <= CSnake::W) )
+			{
+				continue;
+			}
+
+			if(plat[r][c] != ' ')
+			{
+				continue;
+			}
+
+			plat[r][c] = '*';
+			std::pair<int, int> next = make_pair(r, c);
+			pathMap[next] = info.head_;
+			q.push(CHeadInfo(info.step_ + 1, next, goal));
+		}
+	}
+	return -2;
+}
+
+int CEfficientAi::getPath(std::pair<int, int> goal, const std::map<std::pair<int, int>, std::pair<int, int> >& pathMap,
+			std::stack<std::pair<int, int> >& path)
+{
+	while(1)
+	{
+		std::map<std::pair<int, int>, std::pair<int, int> >::const_iterator iter = pathMap.find(goal);
+		if(iter == pathMap.end())
+		{
+			ERROR_LOG("not find goal: (%d, %d)", goal.first, goal.second);
+			return -1;
+		} 
+		std::pair<int, int> preg = iter->second; 
+		if(preg == goal)
+		{
+			return 0;
+		}
+		
+		int x = goal.first - preg.first;
+		int y = goal.second - preg.second;
+		path.push(make_pair(x, y));	
+
+		goal = preg;
+	}		
+	return -2;
+}
+
+
+int CEfficientAi::calcul()	
+{
+	int ret = -1;
+	while(path_.empty() == false)
+	{
+		path_.pop();
+	}
+
+	std::pair<int, int> appleLoc = game_.getAppleLoc();
+	std::string snake = game_.getSnake();
+	ret = bfs(snake, appleLoc, path_);	
+	if(ret >= 0)
+	{
+		INFO_LOG("bfs apple succ");
+		std::string newSnake = game_.getSnake();
+		std::stack<std::pair<int, int> > pathCopy = path_;		
+		ret = go(newSnake, appleLoc, pathCopy);
+		if(ret < 0)
+		{
+			ERROR_LOG("go ret: %d", ret);
+			return -1;
+		}
+
+		int len = newSnake.length();
+		INFO_LOG("newSnake len: %d", len);
+		std::pair<int, int> tail(newSnake[len -2], newSnake[len -1]);
+		ret = bfs(newSnake, tail, pathCopy);
+		if(ret < 0)
+		{
+			INFO_LOG("newSnake find tail fial: head(%d, %d), tail(%d, %d)", 
+					newSnake[0], newSnake[1], tail.first, tail.second);
+		}
+	}
+
+	if(ret < 0)
+	{
+		//寻找蛇尾巴
+		snake = game_.getSnake();
+		int len = snake.length();
+		std::pair<int, int> tail(snake[len -2], snake[len -1]);
+		ret = bfs(snake, tail, path_);
+		DEBUG_LOG("bfs tail");
+		if(ret < 0)
+		{
+			ERROR_LOG("find tail fial: head(%d, %d), tail(%d, %d)", 
+					snake[0], snake[1], tail.first, tail.second);
+			return -3;
+		}
+	}
+
+	if(path_.empty() == false)
+	{
+		pair<int, int> d = path_.top();  path_.pop();
+		int res = getDir(d);
+		if(res < 0)
+		{
+			ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
+			return -4;
+		}
+		return res;
+	}
+	return ret;
+}
+
+int CEfficientAi::getDir(std::pair<int, int> d)
+{
+	for(int i = 0; i < 4; ++i)
+	{
+		if(d.first == CSnake::direction[i][0] &&
+				d.second == CSnake::direction[i][1])
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+
+int CEfficientAi::go(std::string& snk, std::pair<int, int> apple, const std::stack<std::pair<int, int> >& path)
+{
+	std::stack<std::pair<int, int> > pathCopy = path;
+	while(pathCopy.empty() == false)
+	{
+		std::pair<int, int> dir = pathCopy.top();  pathCopy.pop();
+		int r = snk[0] + dir.first;	
+		int c = snk[1] + dir.second; 
+
+		if( !(r >= 1 && c >= 1 && r <= CSnake::H && c <= CSnake::W) )
+		{
+			ERROR_LOG("hit wall");
+			return -1;
+		}
+
+		for(std::string::size_type i = 0; i < snk.length() - 2; i += 2)
+		{
+			if(r == snk[i] && c == snk[i + 1])	
+			{
+				ERROR_LOG("eat self");
+				return -2;
+			}
+		}
+
+		std::string pos; 
+		pos += char(r);
+		pos += char(c);
+		snk.insert(0, pos);
+		if(!(r == apple.first && c == apple.second))
+		{
+			snk.erase(snk.length() - 2, 2);
+		}
+	} 
+	return 0;
+}

@@ -9,6 +9,9 @@
 #include <cmath>
 #include "snake.h"
 
+using namespace std;
+
+
 class CAi
 {
 protected:
@@ -75,13 +78,57 @@ public:
 //仅仅是个演示而已
 class CNormalAi : public CAi
 {
-private:
-
 public:
 	CNormalAi(const CSnake& g) : CAi(g) {}
-
 	virtual int calcul();	
 };
 
+
+struct CHeadInfo
+{
+	int step_;	
+	std::pair<int, int> head_;
+	std::pair<int, int> goal_;
+
+	CHeadInfo(int s, std::pair<int, int> h, std::pair<int, int> g) :
+		step_(s), head_(h), goal_(g) {}
+
+	int dist() const
+	{
+		return std::abs(head_.first - goal_.first) + std::abs(head_.second - goal_.second);	
+	}
+
+
+	bool operator<(const CHeadInfo& b) const
+	{
+		return step_ + dist() >= b.step_ + b.dist();
+	}
+
+	bool operator>(const CHeadInfo& b) const
+	{
+		return step_ + dist() <= b.step_ + b.dist();
+	}
+
+};
+
+
+//静态搜索,减少状态空间,提高效率
+class CEfficientAi : public CAi
+{
+private:
+	std::stack<std::pair<int, int> > path_;
+	
+public:
+	CEfficientAi(const CSnake& g) : CAi(g) {}
+	virtual int calcul();	
+	int fill(const std::string& snake, std::vector<std::string>& plat);
+	int getPath(std::pair<int, int> goal, const std::map<std::pair<int, int>, std::pair<int, int> >&,
+			std::stack<std::pair<int, int> >& path);
+	int getDir(std::pair<int, int>);
+	int go(std::string& snk, std::pair<int, int> apple, const std::stack<std::pair<int, int> >& path);
+
+	//template <class T, class Container, class Compare > 
+	int bfs(std::string& snk, std::pair<int, int> goal, std::stack<std::pair<int, int> >& path);
+};
 
 #endif 
