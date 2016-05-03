@@ -12,8 +12,8 @@ public:
 	enum 
 	{
 		INVALID = -1,
-		H = 8,	
-		W = 8
+		H = 12,	
+		W = 12
 	};
 
 	enum

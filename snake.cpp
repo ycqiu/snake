@@ -135,6 +135,7 @@ int CSnake::go()
 		//重新放苹果		
 		ret = putApple();
 		printPlat();	
+		//printSnake(snake_);
 		if(ret)
 		{
 			INFO_LOG("putApple ret: %d", ret);

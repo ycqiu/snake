@@ -56,7 +56,8 @@ int main()
 	CSnake game;
 	game.printPlat();
 	//CAi ai(game);
-	CCleverAi ai(game);
+	//CCleverAi ai(game);
+	CEfficientAi ai(game);
 	//CNormalAi ai(game);
 	while(ret >= 0)
 	{
@@ -106,7 +107,7 @@ int main()
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
-//		Sleep(300);
+	//	Sleep(300);
 		Sleep(50);
 	}
 	return ret;
