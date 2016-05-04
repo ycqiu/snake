@@ -458,12 +458,23 @@ int CEfficientAi::getPath(std::pair<int, int> goal, const std::map<std::pair<int
 int CEfficientAi::calcul()	
 {
 	int ret = -1;
-	clearPath(nearPath_);
+	if(nearPath_.empty() == false)
+	{
+		pair<int, int> d = nearPath_.top();  nearPath_.pop();
+		int res = getDir(d);
+		if(res < 0)
+		{
+			ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
+			return -4;
+		}
+		return res;
+	}
+
 	std::pair<int, int> appleLoc = game_.getAppleLoc();
 	std::string snake = game_.getSnake();
-	ret = bfs<CMaxHeap>(snake, appleLoc, nearPath_);	
-	//ret = bfs<CMinHeap>(snake, appleLoc, nearPath_);	
-	/*
+	//ret = bfs<CMaxHeap>(snake, appleLoc, nearPath_);	
+	ret = bfs<CMinHeap>(snake, appleLoc, nearPath_);	
+	
 	if(ret >= 0)
 	{
 		INFO_LOG("bfs apple succ");
@@ -485,8 +496,11 @@ int CEfficientAi::calcul()
 			INFO_LOG("newSnake find tail fial: head(%d, %d), tail(%d, %d)", 
 					newSnake[0], newSnake[1], tail.first, tail.second);
 		}
-		
-		clearPath(farPath_);
+		else
+		{		
+			clearPath(farPath_);
+			return calcul();
+		}
 	}
 
 	if(ret < 0)
@@ -504,31 +518,22 @@ int CEfficientAi::calcul()
 					snake[0], snake[1], tail.first, tail.second);
 			return -3;
 		}
-	}
-*/
-	if(nearPath_.empty() == false || farPath_.empty() == false)
-	{
-		pair<int, int> d;
-		if(nearPath_.empty() == false)
+		else
 		{
-			d = nearPath_.top();  nearPath_.pop();
-			clearPath(farPath_);
-			DEBUG_LOG("near not empty");
-		}
+			if(farPath_.empty() == false)
+			{
+				pair<int, int> d = farPath_.top();  farPath_.pop();
+				DEBUG_LOG("far not empty");
 
-		if(farPath_.empty() == false)
-		{
-			d = farPath_.top();  farPath_.pop();
-			DEBUG_LOG("far not empty");
+				int res = getDir(d);
+				if(res < 0)
+				{
+					ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
+					return -4;
+				}
+				return res;
+			}
 		}
-
-		int res = getDir(d);
-		if(res < 0)
-		{
-			ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
-			return -4;
-		}
-		return res;
 	}
 
 	return -5;
@@ -592,3 +597,4 @@ void CEfficientAi::clearPath(std::stack<std::pair<int, int> >& path)
 		path.pop();
 	}
 }
+
