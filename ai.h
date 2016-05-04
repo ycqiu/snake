@@ -7,9 +7,8 @@
 #include <vector>
 #include <map>
 #include <cmath>
+#include <queue>
 #include "snake.h"
-
-using namespace std;
 
 
 class CAi
@@ -115,11 +114,18 @@ struct CHeadInfo
 //静态搜索,减少状态空间,提高效率
 class CEfficientAi : public CAi
 {
+public:
+	typedef std::priority_queue<CHeadInfo> CMinHeap;
+	typedef std::priority_queue<CHeadInfo, std::vector<CHeadInfo>, std::greater<CHeadInfo> > CMaxHeap;
+
 private:
-	std::stack<std::pair<int, int> > path_;
+	std::stack<std::pair<int, int> > farPath_;
+	std::stack<std::pair<int, int> > nearPath_;
 	
 public:
-	CEfficientAi(const CSnake& g) : CAi(g) {}
+	CEfficientAi(const CSnake& g) : CAi(g) {
+		//std::cout << nearPath_.size() << std::endl;
+	}
 	virtual int calcul();	
 	int fill(const std::string& snake, std::vector<std::string>& plat);
 	int getPath(std::pair<int, int> goal, const std::map<std::pair<int, int>, std::pair<int, int> >&,
@@ -127,8 +133,11 @@ public:
 	int getDir(std::pair<int, int>);
 	int go(std::string& snk, std::pair<int, int> apple, const std::stack<std::pair<int, int> >& path);
 
-	//template <class T, class Container, class Compare > 
+	void clearPath(std::stack<std::pair<int, int> >& path);
+
+	template <class T> 
 	int bfs(std::string& snk, std::pair<int, int> goal, std::stack<std::pair<int, int> >& path);
+	//int bfs(std::string& snk, std::pair<int, int> goal, std::stack<std::pair<int, int> >& path);
 };
 
 #endif 
