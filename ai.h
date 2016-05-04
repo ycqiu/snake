@@ -18,6 +18,7 @@ protected:
 
 public:
 	CAi(const CSnake& g) : game_(g) {}
+	virtual ~CAi() {}
 	virtual int calcul();	
 };
 
@@ -41,7 +42,7 @@ struct CSnakeInfo
 
 	bool operator<(const CSnakeInfo& b) const
 	{
-		if(curve_ == b.curve_)
+		//if(curve_ == b.curve_)
 		{
 			if(level_ == b.level_)
 			{
@@ -51,7 +52,7 @@ struct CSnakeInfo
 			return  level_ > b.level_;
 		}
 
-		return curve_ > b.curve_;	
+		//return curve_ > b.curve_;	
 	}
 };
 
