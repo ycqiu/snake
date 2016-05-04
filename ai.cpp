@@ -458,32 +458,20 @@ int CEfficientAi::getPath(std::pair<int, int> goal, const std::map<std::pair<int
 int CEfficientAi::calcul()	
 {
 	int ret = -1;
-	if(nearPath_.empty() == false || farPath_.empty() == false)
+
+	INFO_LOG("clear neart: %d, %d", nearPath_.size(), nearPath_.empty());
+	if(nearPath_.size() == -1)
 	{
-		pair<int, int> d;
-		if(nearPath_.empty() == false)
-		{
-			d = nearPath_.top();  nearPath_.pop();
-		}
-		else
-		{
-			d = farPath_.top();  nearPath_.pop();
-		}
-
-
-		int res = getDir(d);
-		if(res < 0)
-		{
-			ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
-			return -4;
-		}
-		return res;
+		cout << 1 << endl;	
 	}
 
 	clearPath(nearPath_);
+	INFO_LOG("clear neart over");
 	std::pair<int, int> appleLoc = game_.getAppleLoc();
 	std::string snake = game_.getSnake();
+	INFO_LOG("bfs first");
 	ret = bfs<CMinHeap>(snake, appleLoc, nearPath_);	
+	INFO_LOG("bfs first end");
 	if(ret >= 0)
 	{
 		INFO_LOG("bfs apple succ");
@@ -525,7 +513,34 @@ int CEfficientAi::calcul()
 			return -3;
 		}
 	}
-	return calcul();;
+
+	if(nearPath_.empty() == false || farPath_.empty() == false)
+	{
+		pair<int, int> d;
+		if(nearPath_.empty() == false)
+		{
+			d = nearPath_.top();  nearPath_.pop();
+			clearPath(nearPath_);
+			DEBUG_LOG("near not empty");
+		}
+
+		if(farPath_.empty() == false)
+		{
+			d = farPath_.top();  nearPath_.pop();
+			DEBUG_LOG("far not empty");
+		}
+
+
+		int res = getDir(d);
+		if(res < 0)
+		{
+			ERROR_LOG("no this direction: (%d, %d)", d.first, d.second);
+			return -4;
+		}
+		return res;
+	}
+
+	return -5;
 }
 
 int CEfficientAi::getDir(std::pair<int, int> d)
@@ -579,7 +594,7 @@ int CEfficientAi::go(std::string& snk, std::pair<int, int> apple, const std::sta
 }
 
 
-void clearPath(std::stack<std::pair<int, int> >& path)
+void CEfficientAi::clearPath(std::stack<std::pair<int, int> >& path)
 {
 	while(path.empty() == false)
 	{

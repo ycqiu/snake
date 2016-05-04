@@ -68,16 +68,8 @@ int main()
 			break;
 		}
 
-/*		if(kbhit())
-		{
-			int dir = game.getkb();
-			if(dir == -1)
-			{
-				return 0;
-			}
-			game.changeDirection(dir);	
-		}
-*/
+		DEBUG_LOG("draw over");
+
 		int dir = ai.calcul();
 		if(dir < 0)
 		{
@@ -95,6 +87,8 @@ int main()
 			break;
 		}
 
+		DEBUG_LOG("changet over");
+
 		ret = game.go();
 		if(ret < 0)
 		{
@@ -107,6 +101,9 @@ int main()
 			INFO_LOG("go ret: %d, snake eat all apple", ret);
 			break;
 		}
+
+		DEBUG_LOG("go over");
+
 		Sleep(300);
 	//	Sleep(50);
 	}
