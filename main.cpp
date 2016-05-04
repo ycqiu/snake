@@ -68,8 +68,6 @@ int main()
 			break;
 		}
 
-		DEBUG_LOG("draw over");
-
 		int dir = ai.calcul();
 		if(dir < 0)
 		{
@@ -87,8 +85,6 @@ int main()
 			break;
 		}
 
-		DEBUG_LOG("changet over");
-
 		ret = game.go();
 		if(ret < 0)
 		{
@@ -102,10 +98,8 @@ int main()
 			break;
 		}
 
-		DEBUG_LOG("go over");
-
-		Sleep(300);
-	//	Sleep(50);
+	//	Sleep(300);
+		Sleep(50);
 	}
 	return ret;
 }
